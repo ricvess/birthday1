@@ -3,118 +3,669 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Happy Birthday 🎂</title>
+  <title>Buat Kartu Ulang Tahun</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #ffe0f0, #f8c8dc);
+      color: #d26ca6;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+    }
+    form {
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin: 12px 0 6px;
+    }
+    input, textarea, select, button {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #d26ca6;
+      margin-bottom: 10px;
+    }
+    button {
+      background: #d26ca6;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #c05d95;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎀 Buat Website Ulang Tahun 🎀</h1>
+  <form id="cardForm">
+    <label>Nama Penerima:</label>
+    <input type="text" id="name" required />
+
+    <label>Ucapan:</label>
+    <textarea id="message" required></textarea>
+
+    <label>Pilih Tema Warna:</label>
+    <select id="theme">
+      <option value="pink">Pink</option>
+      <option value="blue">Blue</option>
+      <option value="gold">Gold</option>
+      <option value="dark">Dark</option>
+    </select>
+
+    <label>Link Musik (opsional):</label>
+    <input type="text" id="music" placeholder="URL Musik"/>
+
+    <label>Upload Foto (opsional):</label>
+    <input type="file" id="photo" accept="image/*"/>
+
+    <button type="submit">✨ Generate Link ✨</button>
+  </form>
+
+  <script>
+    document.getElementById('cardForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const name = encodeURIComponent(document.getElementById('name').value.trim());
+      const message = encodeURIComponent(document.getElementById('message').value.trim());
+      const theme = encodeURIComponent(document.getElementById('theme').value);
+      const music = encodeURIComponent(document.getElementById('music').value.trim());
+
+      let link = `card.html?name=${name}&message=${message}&theme=${theme}&music=${music}`;
+
+      alert('Link berhasil dibuat! Copy link ini:\n' + window.location.origin + '/' + link);
+    });
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kartu Ucapan 🎂</title>
   <style>
     body {
       margin: 0;
       padding: 0;
-      background: linear-gradient(135deg, #ffe0f0, #f8c8dc);
-      font-family: 'Arial', sans-serif;
-      color: #d26ca6;
-      overflow: hidden;
-    }
-
-    .container {
+      font-family: Arial, sans-serif;
       text-align: center;
-      padding: 50px 20px;
-      max-width: 600px;
-      margin: auto;
-      background-color: rgba(255, 255, 255, 0.7);
-      border-radius: 20px;
-      box-shadow: 0 4px 10px #d26ca6;
-      margin-top: 60px;
+      transition: background 0.5s;
+      color: white;
     }
-
+    .container {
+      margin-top: 50px;
+      padding: 20px;
+    }
     h1 {
       font-size: 2.5em;
     }
-
     p {
       font-size: 1.2em;
       margin: 20px;
     }
-
-    button {
-      padding: 12px 24px;
-      background-color: #d26ca6;
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-size: 1em;
-      cursor: pointer;
-      box-shadow: 0 2px 6px #c05d95;
-      transition: background 0.3s;
-    }
-
-    button:hover {
-      background-color: #c05d95;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    #confetti {
-      position: fixed;
-      top: 0;
-      left: 0;
-      pointer-events: none;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
+    audio {
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>🎂 Happy Birthday, <span id="name">[Nama]</span>! 🎉</h1>
-    <p id="message">Semoga hari ulang tahunmu penuh cinta, tawa, dan kebahagiaan 🌸✨</p>
-    <button id="giftBtn">🎁 Buka Kado</button>
-    <p id="hiddenMessage" class="hidden">🎀 Surprise! Kamu orang paling spesial hari ini! 🎀</p>
+    <h1 id="title">Happy Birthday, [Nama]!</h1>
+    <p id="msg">[Ucapan]</p>
+    <audio id="musicPlayer" controls autoplay loop></audio>
   </div>
 
-  <canvas id="confetti"></canvas>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const name = params.get('name') || '[Nama]';
+    const message = params.get('message') || '[Ucapan]';
+    const theme = params.get('theme') || 'pink';
+    const music = params.get('music') || '';
+
+    document.getElementById('title').textContent = `Happy Birthday, ${decodeURIComponent(name)}!`;
+    document.getElementById('msg').textContent = decodeURIComponent(message);
+
+    // Tema warna
+    let bg;
+    switch(theme) {
+      case 'pink': bg = 'linear-gradient(135deg, #ffe0f0, #f8c8dc)'; break;
+      case 'blue': bg = 'linear-gradient(135deg, #cce7ff, #99d6ff)'; break;
+      case 'gold': bg = 'linear-gradient(135deg, #fff1c1, #ffd700)'; break;
+      case 'dark': bg = '#333'; break;
+      default: bg = '#fff';
+    }
+    document.body.style.background = bg;
+
+    // Musik
+    if (music) {
+      document.getElementById('musicPlayer').src = decodeURIComponent(music);
+    } else {
+      document.getElementById('musicPlayer').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Galeri Foto</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #fbe0f5;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      color: #c85a9e;
+    }
+    h1 {
+      margin: 20px;
+    }
+    .gallery {
+      display: flex;
+      overflow-x: scroll;
+      scroll-snap-type: x mandatory;
+      gap: 20px;
+      padding: 20px;
+    }
+    .gallery img {
+      height: 300px;
+      border-radius: 12px;
+      scroll-snap-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+    .note {
+      font-size: 0.9em;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+  <h1>📸 Galeri Kenangan</h1>
+  <div class="gallery" id="photoGallery"></div>
+  <p class="note">Geser kanan-kiri untuk melihat semua foto!</p>
 
   <script>
-    // Tombol Buka Kado
-    document.getElementById('giftBtn').addEventListener('click', () => {
-      document.getElementById('hiddenMessage').classList.remove('hidden');
+    // Ambil foto dari URL param (separated by comma)
+    const params = new URLSearchParams(window.location.search);
+    const photos = params.get("photos");
+
+    const gallery = document.getElementById("photoGallery");
+
+    if (photos) {
+      const photoList = photos.split(',');
+      photoList.forEach(url => {
+        const img = document.createElement("img");
+        img.src = decodeURIComponent(url.trim());
+        gallery.appendChild(img);
+      });
+    } else {
+      gallery.innerHTML = "<p>Belum ada foto yang dimasukkan.</p>";
+    }
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mini Quiz 🎁</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      color: #fff;
+      transition: background 0.5s;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    p {
+      margin: 20px 0;
+      font-size: 1.2em;
+    }
+    input {
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      width: 80%;
+      margin-bottom: 20px;
+    }
+    button {
+      background: #d26ca6;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #c05d95;
+    }
+    .result {
+      margin-top: 20px;
+      font-size: 1.3em;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎉 Tebak Jawaban!</h1>
+  <p id="questionText">[Pertanyaan]</p>
+  <input type="text" id="answerInput" placeholder="Ketik jawabanmu..."/>
+  <br>
+  <button onclick="checkAnswer()">Cek Jawaban</button>
+  <div class="result" id="result"></div>
+
+  <script>
+    // Ambil param dari URL
+    const params = new URLSearchParams(window.location.search);
+    const question = decodeURIComponent(params.get('question') || 'Apa warna favoritku?');
+    const correctAnswer = (params.get('answer') || 'pink').toLowerCase();
+    const theme = params.get('theme') || 'pink';
+
+    document.getElementById('questionText').textContent = question;
+
+    // Tema
+    let bg;
+    switch(theme) {
+      case 'pink': bg = 'linear-gradient(135deg, #ffe0f0, #f8c8dc)'; break;
+      case 'blue': bg = 'linear-gradient(135deg, #cce7ff, #99d6ff)'; break;
+      case 'gold': bg = 'linear-gradient(135deg, #fff1c1, #ffd700)'; break;
+      case 'dark': bg = '#333'; break;
+      default: bg = '#fff';
+    }
+    document.body.style.background = bg;
+
+    // Check Jawaban
+    function checkAnswer() {
+      const userAnswer = document.getElementById('answerInput').value.trim().toLowerCase();
+      const resultDiv = document.getElementById('result');
+      if (userAnswer === correctAnswer) {
+        resultDiv.textContent = '✅ BENAR! Kamu tahu aku banget ❤️';
+      } else {
+        resultDiv.textContent = '❌ Salah 😝 Coba lagi ya!';
+      }
+    }
+  </script>
+</body>
+</html>
+// animasi.js
+
+// CONFETTI 🎊
+function startConfetti() {
+  const duration = 3 * 1000;
+  const end = Date.now() + duration;
+
+  (function frame() {
+    confetti({
+      particleCount: 5,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0 },
+    });
+    confetti({
+      particleCount: 5,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1 },
     });
 
-    // Animasi Confetti
-    const canvas = document.getElementById('confetti');
-    const ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const confettiPieces = [];
-    for (let i = 0; i < 150; i++) {
-      confettiPieces.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        size: Math.random() * 5 + 2,
-        color: `hsl(${Math.random() * 360}, 100%, 80%)`,
-        speed: Math.random() * 3 + 1
-      });
+    if (Date.now() < end) {
+      requestAnimationFrame(frame);
     }
+  })();
+}
 
-    function drawConfetti() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      confettiPieces.forEach(piece => {
-        ctx.fillStyle = piece.color;
-        ctx.beginPath();
-        ctx.arc(piece.x, piece.y, piece.size, 0, Math.PI * 2);
-        ctx.fill();
-        piece.y += piece.speed;
-        if (piece.y > canvas.height) {
-          piece.y = 0;
-          piece.x = Math.random() * canvas.width;
-        }
-      });
-      requestAnimationFrame(drawConfetti);
+// BALON 🎈
+function startBalloons() {
+  for (let i = 0; i < 15; i++) {
+    const balloon = document.createElement('div');
+    balloon.classList.add('balloon');
+    balloon.style.left = Math.random() * 100 + 'vw';
+    balloon.style.animationDuration = (5 + Math.random() * 5) + 's';
+    document.body.appendChild(balloon);
+
+    setTimeout(() => {
+      balloon.remove();
+    }, 10000);
+  }
+}
+
+// STYLE BALON (tambahkan ke CSS)
+const balloonStyle = document.createElement('style');
+balloonStyle.innerHTML = `
+.balloon {
+  position: fixed;
+  bottom: -100px;
+  width: 30px;
+  height: 40px;
+  background-color: hsl(${Math.random()*360}, 70%, 60%);
+  border-radius: 50% 50% 45% 45%;
+  animation: rise linear forwards;
+  z-index: 9999;
+  opacity: 0.8;
+}
+@keyframes rise {
+  to {
+    transform: translateY(-110vh);
+    opacity: 0;
+  }
+}
+`;
+document.head.appendChild(balloonStyle);
+
+// AUTO MULAI SAAT LOAD
+window.addEventListener('load', () => {
+  startConfetti();
+  startBalloons();
+});
+// share.js
+
+function getCurrentUrl() {
+  return window.location.href;
+}
+
+function shareToWhatsApp() {
+  const url = getCurrentUrl();
+  const message = encodeURIComponent(`Hai! Ini undangan ulang tahun spesial buat kamu 🎂🥳 Klik linknya ya: ${url}`);
+  const waUrl = `https://wa.me/?text=${message}`;
+  window.open(waUrl, '_blank');
+}
+
+function copyLink() {
+  const url = getCurrentUrl();
+  navigator.clipboard.writeText(url).then(() => {
+    alert('✅ Link berhasil dicopy ke clipboard!');
+  }).catch(() => {
+    alert('❌ Gagal copy link. Silakan copy manual.');
+  });
+}
+/* style.css */
+
+/* GLOBAL RESET & BODY */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  transition: background 0.5s;
+}
+
+/* CONTAINER */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+
+/* HEADING */
+h1 {
+  color: #d26ca6;
+  margin: 20px 0;
+  font-size: 2.5em;
+}
+
+p {
+  font-size: 1.2em;
+  color: #555;
+}
+
+/* FORM STYLE */
+form {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+label {
+  display: block;
+  margin: 12px 0 6px;
+  color: #c85a9e;
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #d26ca6;
+  border-radius: 8px;
+}
+
+/* BUTTON STYLE */
+button {
+  background-color: #d26ca6;
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background-color: #c05d95;
+}
+
+/* SHARE BUTTONS */
+.share-button {
+  background-color: #25d366;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  margin: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.share-button:hover {
+  background-color: #1ebe5d;
+}
+
+/* THEME CLASSES */
+.theme-pink {
+  background: linear-gradient(135deg, #ffe0f0, #f8c8dc);
+  color: #c85a9e;
+}
+
+.theme-blue {
+  background: linear-gradient(135deg, #cce7ff, #99d6ff);
+  color: #5a8cd2;
+}
+
+.theme-gold {
+  background: linear-gradient(135deg, #fff1c1, #ffd700);
+  color: #b58e00;
+}
+
+.theme-dark {
+  background-color: #333;
+  color: #eee;
+}
+
+/* GALLERY STYLE */
+.gallery {
+  display: flex;
+  overflow-x: auto;
+  gap: 20px;
+  padding: 20px;
+  scroll-snap-type: x mandatory;
+}
+
+.gallery img {
+  height: 300px;
+  border-radius: 12px;
+  scroll-snap-align: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+/* RESULT STYLE (quiz) */
+.result {
+  margin-top: 20px;
+  font-size: 1.3em;
+  font-weight: bold;
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
+  h1 {
+    font-size: 2em;
+  }
+  .gallery img {
+    height: 200px;
+  }
+}
+// main.js
+
+// Ambil parameter dari URL
+function getParams() {
+  return new URLSearchParams(window.location.search);
+}
+
+// Ambil nilai parameter
+function getParamValue(key, defaultValue = '') {
+  const params = getParams();
+  return decodeURIComponent(params.get(key) || defaultValue);
+}
+
+// Simpan ke localStorage
+function saveToLocal(key, value) {
+  localStorage.setItem(key, value);
+}
+
+// Ambil dari localStorage
+function getFromLocal(key, defaultValue = '') {
+  return localStorage.getItem(key) || defaultValue;
+}
+
+// Atur tema dari parameter atau localStorage
+function applyTheme() {
+  const theme = getParamValue('theme') || getFromLocal('theme') || 'pink';
+  document.body.className = 'theme-' + theme;
+  saveToLocal('theme', theme);
+}
+
+// Auto apply saat halaman load
+window.addEventListener('DOMContentLoaded', () => {
+  applyTheme();
+});
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard - Ulang Tahun</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      background: #fff8f9;
+      color: #c85a9e;
     }
+    h1 {
+      text-align: center;
+      margin: 20px;
+    }
+    .section {
+      margin: 30px auto;
+      max-width: 600px;
+      padding: 20px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    input, textarea, select {
+      width: 100%;
+      margin-bottom: 12px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #d26ca6;
+    }
+    .output {
+      background: #fcebf4;
+      padding: 10px;
+      word-break: break-all;
+      border-radius: 6px;
+      margin-top: 10px;
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body>
+  <h1>🛠️ Admin Generator Website Ulang Tahun</h1>
+  <div class="section">
+    <label>Nama:</label>
+    <input id="adminName" type="text" placeholder="Felicia" />
 
-    drawConfetti();
+    <label>Ucapan:</label>
+    <textarea id="adminMessage" placeholder="Selamat ulang tahun yaa!"></textarea>
+
+    <label>Tema:</label>
+    <select id="adminTheme">
+      <option value="pink">Pink</option>
+      <option value="blue">Blue</option>
+      <option value="gold">Gold</option>
+      <option value="dark">Dark</option>
+    </select>
+
+    <label>Link Musik (opsional):</label>
+    <input id="adminMusic" type="text" placeholder="https://..." />
+
+    <label>Link Foto Galeri (pisahkan dengan koma):</label>
+    <input id="adminPhotos" type="text" placeholder="https://imgur.com/1.jpg,https://imgur.com/2.jpg" />
+
+    <label>Pertanyaan Quiz:</label>
+    <input id="adminQuizQ" type="text" placeholder="Kapan ulang tahun aku?" />
+
+    <label>Jawaban Quiz:</label>
+    <input id="adminQuizA" type="text" placeholder="12 Mei" />
+
+    <button onclick="generateLinks()">✨ Generate Semua Link</button>
+
+    <div id="resultArea" class="output"></div>
+  </div>
+
+  <script>
+    function generateLinks() {
+      const name = encodeURIComponent(document.getElementById("adminName").value.trim());
+      const msg = encodeURIComponent(document.getElementById("adminMessage").value.trim());
+      const theme = encodeURIComponent(document.getElementById("adminTheme").value);
+      const music = encodeURIComponent(document.getElementById("adminMusic").value.trim());
+      const photos = encodeURIComponent(document.getElementById("adminPhotos").value.trim());
+      const quizQ = encodeURIComponent(document.getElementById("adminQuizQ").value.trim());
+      const quizA = encodeURIComponent(document.getElementById("adminQuizA").value.trim());
+
+      const card = `card.html?name=${name}&message=${msg}&theme=${theme}&music=${music}`;
+      const galeri = `galeri.html?photos=${photos}`;
+      const quiz = `quiz.html?question=${quizQ}&answer=${quizA}&theme=${theme}`;
+
+      document.getElementById("resultArea").innerHTML = `
+        <strong>✅ Link Siap Pakai:</strong><br>
+        🎂 <b>Ucapan:</b><br><a href="${card}" target="_blank">${card}</a><br><br>
+        📸 <b>Galeri:</b><br><a href="${galeri}" target="_blank">${galeri}</a><br><br>
+        🧠 <b>Quiz:</b><br><a href="${quiz}" target="_blank">${quiz}</a><br><br>
+        ✨ *Link bisa langsung kamu kirim ke orang tersayang!*
+      `;
+    }
   </script>
 </body>
 </html>
