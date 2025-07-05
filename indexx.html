@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Birthday 🎂</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #ffe0f0, #f8c8dc);
+      font-family: 'Arial', sans-serif;
+      color: #d26ca6;
+      overflow: hidden;
+    }
+
+    .container {
+      text-align: center;
+      padding: 50px 20px;
+      max-width: 600px;
+      margin: auto;
+      background-color: rgba(255, 255, 255, 0.7);
+      border-radius: 20px;
+      box-shadow: 0 4px 10px #d26ca6;
+      margin-top: 60px;
+    }
+
+    h1 {
+      font-size: 2.5em;
+    }
+
+    p {
+      font-size: 1.2em;
+      margin: 20px;
+    }
+
+    button {
+      padding: 12px 24px;
+      background-color: #d26ca6;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1em;
+      cursor: pointer;
+      box-shadow: 0 2px 6px #c05d95;
+      transition: background 0.3s;
+    }
+
+    button:hover {
+      background-color: #c05d95;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #confetti {
+      position: fixed;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎂 Happy Birthday, <span id="name">[Nama]</span>! 🎉</h1>
+    <p id="message">Semoga hari ulang tahunmu penuh cinta, tawa, dan kebahagiaan 🌸✨</p>
+    <button id="giftBtn">🎁 Buka Kado</button>
+    <p id="hiddenMessage" class="hidden">🎀 Surprise! Kamu orang paling spesial hari ini! 🎀</p>
+  </div>
+
+  <canvas id="confetti"></canvas>
+
+  <script>
+    // Tombol Buka Kado
+    document.getElementById('giftBtn').addEventListener('click', () => {
+      document.getElementById('hiddenMessage').classList.remove('hidden');
+    });
+
+    // Animasi Confetti
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const confettiPieces = [];
+    for (let i = 0; i < 150; i++) {
+      confettiPieces.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 5 + 2,
+        color: `hsl(${Math.random() * 360}, 100%, 80%)`,
+        speed: Math.random() * 3 + 1
+      });
+    }
+
+    function drawConfetti() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      confettiPieces.forEach(piece => {
+        ctx.fillStyle = piece.color;
+        ctx.beginPath();
+        ctx.arc(piece.x, piece.y, piece.size, 0, Math.PI * 2);
+        ctx.fill();
+        piece.y += piece.speed;
+        if (piece.y > canvas.height) {
+          piece.y = 0;
+          piece.x = Math.random() * canvas.width;
+        }
+      });
+      requestAnimationFrame(drawConfetti);
+    }
+
+    drawConfetti();
+  </script>
+</body>
+</html>
